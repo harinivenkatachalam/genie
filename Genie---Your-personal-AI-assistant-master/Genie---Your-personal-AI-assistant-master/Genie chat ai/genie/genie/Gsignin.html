@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genie - Sign In</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<style>
+    /* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f4f8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Container */
+.container {
+    background-color: #ffffff;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    width: 360px;
+    text-align: center;
+}
+
+.logo h1 {
+    font-size: 2.5rem;
+    color: #007bff;
+    margin-bottom: 20px;
+}
+
+/* Form Header */
+h2 {
+    margin-bottom: 10px;
+    color: #333;
+}
+
+p {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+}
+
+/* Input Fields */
+.input-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.input-group label {
+    font-size: 0.9rem;
+    color: #007bff;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    color: #333;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: #007bff;
+}
+
+/* Button */
+button {
+    width: 100%;
+    padding: 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Error Message */
+.error-message {
+    color: #ff4757;
+    margin-top: 10px;
+    display: none;
+    font-size: 0.9rem;
+}
+
+/* Footer */
+.footer {
+    margin-top: 20px;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.footer a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}
+
+</style>
+<body>
+    <div class="container">
+        <div class="logo">
+            <h1>Genie</h1>
+        </div>
+        <h2>Welcome Back</h2>
+        <p>Please sign in to continue</p>
+        <form id="signInForm" onsubmit="return validateForm()">
+            <div class="input-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            </div>
+            <button type="submit"><a href="Ghome.html">Sign in</a></button>
+            <p class="error-message" id="errorMessage"></p>
+        </form>
+        <p class="footer">Don't have an account? <a href="Gsignup.html">Sign up here</a></p>
+    </div>
+    <script>
+        function validateForm() {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const errorMessage = document.getElementById('errorMessage');
+
+    // Reset the error message
+    errorMessage.style.display = 'none';
+
+    if (!validateEmail(email)) {
+        errorMessage.textContent = 'Please enter a valid email address.';
+        errorMessage.style.display = 'block';
+        return false;
+    }
+
+    if (password.length < 6) {
+        errorMessage.textContent = 'Password must be at least 6 characters long.';
+        errorMessage.style.display = 'block';
+        return false;
+    }
+
+    // If validation passes
+    alert('Sign In successful!');
+    return true;
+}
+
+function validateEmail(email) {
+    const re = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    return re.test(String(email).toLowerCase());
+}
+
+    </script>
+</body>
+</html>

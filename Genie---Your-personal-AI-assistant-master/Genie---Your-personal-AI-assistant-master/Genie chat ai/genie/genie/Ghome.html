@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genie - Your Personal AI Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --text-color: #333;
+            --bg-color: #f0f4f8;
+            --header-bg: rgba(0, 123, 255, 0.9);
+        }
+
+        .dark-mode {
+            --primary-color: #4da3ff;
+            --text-color: #f0f0f0;
+            --bg-color: #1a1a1a;
+            --header-bg: rgba(0, 51, 102, 0.9);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+        }
+
+        header {
+            background-color: var(--header-bg);
+            padding: 20px 0;
+            position: relative;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        header p {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.1rem;
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            flex: 1 0 auto;
+        }
+
+        .main-container h2 {
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            animation: fadeInUp 0.6s forwards;
+        }
+
+        .description {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            color: var(--text-color);
+            line-height: 1.6;
+            animation: fadeInUp 0.6s 0.2s forwards;
+        }
+
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .cta-buttons a {
+            text-decoration: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            background-color: var(--primary-color);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .cta-buttons a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background-color: rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+            z-index: -1;
+        }
+
+        .cta-buttons a:hover::before {
+            width: 100%;
+        }
+
+        .cta-buttons a:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,123,255,0.2);
+        }
+
+        footer {
+            background-color: var(--header-bg);
+            color: #fff;
+            text-align: center;
+            padding: 20px 0;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        footer a {
+            color: #ffffff;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        footer a:hover {
+            color: var(--primary-color);
+        }
+
+        .toggle-dark-mode {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+
+            .main-container h2 {
+                font-size: 2rem;
+            }
+
+            .description {
+                font-size: 1rem;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-animation" id="background-animation"></div>
+
+    <header>
+        <div class="header-content">
+            <h1>Genie</h1>
+            <p>Your Personal AI Assistant</p>
+        </div>
+        <button class="toggle-dark-mode" onclick="toggleDarkMode()">Toggle Dark Mode</button>
+    </header>
+
+    <div class="main-container">
+        <h2>Ask Genie Anything</h2>
+        <p class="description">Get instant answers, expert help, and personalized solutions with Genie. Whether it's coding assistance, project management tips, or just brainstorming, Genie is here to help!</p>
+        
+        <div class="cta-buttons">
+            <a href="eg.html">Get Started</a>
+            <a href="Gsignin.html">Sign In</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Genie. All rights reserved. <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+    </footer>
+
+    <script>
+        // Three.js background animation
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('background-animation').appendChild(renderer.domElement);
+
+        const geometry = new THREE.SphereGeometry(5, 32, 32);
+        const material = new THREE.MeshBasicMaterial({ color: 0x007bff, wireframe: true });
+        const sphere = new THREE.Mesh(geometry, material);
+        scene.add(sphere);
+
+        const particles = new THREE.Group();
+        scene.add(particles);
+
+        for (let i = 0; i < 200; i++) {
+            const particle = new THREE.Mesh(
+                new THREE.SphereGeometry(0.05, 8, 8),
+                new THREE.MeshBasicMaterial({ color: 0x007bff })
+            );
+            particle.position.set(
+                Math.random() * 10 - 5,
+                Math.random() * 10 - 5,
+                Math.random() * 10 - 5
+            );
+            particles.add(particle);
+        }
+
+        camera.position.z = 15;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            sphere.rotation.x += 0.005;
+            sphere.rotation.y += 0.005;
+            particles.rotation.x += 0.002;
+            particles.rotation.y += 0.002;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        function setDarkMode(isDark) {
+            if (isDark) {
+                document.body.classList.add('dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+            }
+            localStorage.setItem('darkMode', isDark);
+            updateThreeJsColors();
+        }
+
+        function toggleDarkMode() {
+            const isDark = !document.body.classList.contains('dark-mode');
+            setDarkMode(isDark);
+        }
+
+        function applyStoredDarkMode() {
+            const isDark = localStorage.getItem('darkMode') === 'true';
+            setDarkMode(isDark);
+        }
+
+        function updateThreeJsColors() {
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            const color = isDarkMode ? 0x4da3ff : 0x007bff;
+            sphere.material.color.setHex(color);
+            particles.children.forEach(particle => {
+                particle.material.color.setHex(color);
+            });
+        }
+
+        // Apply stored dark mode setting when the page loads
+        document.addEventListener('DOMContentLoaded', applyStoredDarkMode);
+    </script>
+</body>
+</html>

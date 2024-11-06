@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genie - PDF Summarizer</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            background-color: #f4f4f9;
+            transition: background-color 0.3s ease;
+        }
+
+        .main-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .left-panel {
+            width: 40%;
+            padding: 20px;
+            border-right: 1px solid #ddd;
+            overflow-y: auto;
+        }
+
+        .chat-container {
+            width: 60%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            padding: 20px;
+            background-color: #007bff;
+            color: #ffffff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.2em;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: #f1f1f1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            max-width: 75%;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 1em;
+            line-height: 1.5;
+        }
+
+        .sent {
+            background-color: #007bff;
+            color: #fff;
+            align-self: flex-end;
+            text-align: right;
+        }
+
+        .received {
+            background-color: #e0e0e0;
+            color: #333;
+            align-self: flex-start;
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 15px;
+            background-color: #ffffff;
+            border-top: 1px solid #ddd;
+            align-items: center;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 12px;
+            font-size: 1em;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        .chat-input button {
+            margin-left: 10px;
+            padding: 12px 20px;
+            font-size: 1em;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .chat-input button:hover {
+            background-color: #0056b3;
+        }
+
+        #pdfViewer {
+            width: 100%;
+            height: 500px;
+            border: none;
+            margin-top: 20px;
+        }
+
+        .dark-mode {
+            background-color: #121212;
+            color: #fff;
+        }
+
+        .dark-mode .left-panel,
+        .dark-mode .chat-container {
+            background-color: #1e1e1e;
+            border-color: #333;
+        }
+
+        .dark-mode .chat-header {
+            background-color: #333;
+        }
+
+        .dark-mode .chat-messages {
+            background-color: #2a2a2a;
+        }
+
+        .dark-mode .received {
+            background-color: #3a3a3a;
+            color: #fff;
+        }
+
+        .dark-mode .chat-input {
+            background-color: #1e1e1e;
+            border-top: 1px solid #444;
+        }
+
+        .dark-mode .chat-input input {
+            background-color: #333;
+            color: #fff;
+            border: 1px solid #555;
+        }
+
+        .dark-mode .chat-input button {
+            background-color: #444;
+        }
+
+        .dark-mode .chat-input button:hover {
+            background-color: #555;
+        }
+
+        .message pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 10px;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+
+        .dark-mode .message pre {
+            background-color: #2a2a2a;
+            border-color: #444;
+            color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="left-panel">
+            <h2>PDF Uploader</h2>
+            <form id="uploadForm">
+                <input type="file" class="form-control-file mb-3" id="pdfUpload" accept="application/pdf">
+                <button class="btn btn-primary mt-2" type="button" id="uploadBtn">Upload PDF</button>
+            </form>
+            <iframe id="pdfViewer" src=""></iframe>
+        </div>
+
+        <div class="chat-container">
+            <div class="chat-header">
+                <h2>Chat with Genie</h2>
+                <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
+            </div>
+
+            <div class="chat-messages" id="chat-container"></div>
+
+            <div class="chat-input">
+                <input type="text" id="user-input" placeholder="Ask about your PDF">
+                <button id="send-button">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        const uploadBtn = document.getElementById('uploadBtn');
+        const pdfUpload = document.getElementById('pdfUpload');
+        const pdfViewer = document.getElementById('pdfViewer');
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button');
+        const chatContainer = document.getElementById('chat-container');
+
+        uploadBtn.addEventListener('click', uploadPdf);
+        sendButton.addEventListener('click', sendMessage);
+        userInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        function uploadPdf() {
+            const file = pdfUpload.files[0];
+            if (file) {
+                const formData = new FormData();
+                formData.append('file', file);
+                fetch('/upload_pdf', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert('Error uploading PDF: ' + data.error);
+                    } else {
+                        alert('PDF uploaded and processed successfully. You can now ask questions about it.');
+                        const url = URL.createObjectURL(file);
+                        pdfViewer.src = url;
+                    }
+                })
+                .catch(error => alert('Error: ' + error));
+            } else {
+                alert('Please select a PDF file first.');
+            }
+        }
+
+        function sendMessage() {
+            const message = userInput.value.trim();
+            if (message) {
+                appendMessage('You', message);
+                fetch('/chat', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({message: message, type: 'pdf'})
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        appendMessage('Genie', 'Error: ' + data.error);
+                    } else {
+                        appendMessage('Genie', formatResponse(data.response));
+                    }
+                })
+                .catch(error => appendMessage('Genie', 'Error: ' + error));
+                userInput.value = '';
+            }
+        }
+        
+        function formatResponse(response) {
+            if (typeof response === 'string') {
+                const lines = response.split('\n');
+                let formattedResponse = '';
+                let inCodeBlock = false;
+
+                for (const line of lines) {
+                    if (line.startsWith('```')) {
+                        inCodeBlock = !inCodeBlock;
+                        if (inCodeBlock) {
+                            formattedResponse += '<pre>';
+                        } else {
+                            formattedResponse += '</pre>';
+                        }
+                    } else {
+                        formattedResponse += inCodeBlock ? line + '\n' : line + '<br>';
+                    }
+                }
+                return formattedResponse;
+            } else {
+                return 'Error: Unexpected response format';
+            }
+        }
+
+        function appendMessage(sender, message) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', sender === 'You' ? 'sent' : 'received');
+            messageElement.innerHTML = message;
+            chatContainer.appendChild(messageElement);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function setDarkMode(isDark) {
+            if (isDark) {
+                document.body.classList.add('dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+            }
+            localStorage.setItem('darkMode', isDark);
+        }
+
+        function toggleDarkMode() {
+            const isDark = !document.body.classList.contains('dark-mode');
+            setDarkMode(isDark);
+        }
+
+        function applyStoredDarkMode() {
+            const isDark = localStorage.getItem('darkMode') === 'true';
+            setDarkMode(isDark);
+        }
+
+        document.addEventListener('DOMContentLoaded', applyStoredDarkMode);
+    </script>
+</body>
+</html>
